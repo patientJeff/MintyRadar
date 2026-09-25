@@ -140,6 +140,10 @@ To try it in a development copy of the game, which also loads Mod Menu:
 | `Keybindings` | Keybind registration and handling, including the key that opens the settings screen |
 | `ModMenuIntegration` | Adds the settings screen to Mod Menu's Configure button (only used when Mod Menu is installed) |
 
+## Update log
+
+See [CHANGELOG.md](CHANGELOG.md) for what's new in each version.
+
 ## License
 
 [MIT](LICENSE) © 2026 patientJeff
