@@ -7,6 +7,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.client.input.KeyEvent;
@@ -19,8 +20,9 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Settings screen, reachable from Mod Menu. Built on vanilla's options list, so it
- * looks and behaves like the game's own settings pages. It needs no config library.
+ * Settings screen, opened with the settings keybind or from Mod Menu. Built on
+ * vanilla's options list, so it looks and behaves like the game's own settings pages.
+ * It needs no config library.
  *
  * <p>Changes apply live, so the radar updates behind the screen as you adjust it.
  * The config file is written when the screen closes. Keybinds are rebound the same
@@ -34,6 +36,7 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 	private Button[] resetButtons;
 	/** The keybind waiting for a key press, or null when not rebinding. */
 	private KeyMapping listening;
+	private EditBox friendBox;
 
 	public RadarConfigScreen(Screen parent) {
 		super(parent, net.minecraft.client.Minecraft.getInstance().options,
@@ -47,24 +50,50 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 				OptionInstance.createBoolean("options.minty_radar.enabled", config.enabled,
 						v -> config.enabled = v),
 				OptionInstance.createBoolean("options.minty_radar.show_map",
-						OptionInstance.cachedConstantTooltip(Component.translatable("options.minty_radar.show_map.tooltip")),
+						tooltip("options.minty_radar.show_map.tooltip"),
 						config.showMap, v -> config.showMap = v),
 				rangeOption());
 
 		list.addHeader(Component.translatable("options.minty_radar.section.display"));
 		list.addSmall(
+				enumOption("options.minty_radar.shape", RadarConfig.Shape.values(), config.shape,
+						v -> config.shape = v),
 				enumOption("options.minty_radar.blip_style", RadarConfig.BlipStyle.values(), config.blipStyle,
 						v -> config.blipStyle = v),
 				intOption("options.minty_radar.head_size", 4, 16, config.headSize,
 						v -> Component.literal(v + "px"), v -> config.headSize = v),
 				enumOption("options.minty_radar.name_mode", RadarConfig.NameMode.values(), config.nameMode,
 						v -> config.nameMode = v),
-				OptionInstance.createBoolean("options.minty_radar.player_list",
-						OptionInstance.cachedConstantTooltip(Component.translatable("options.minty_radar.player_list.tooltip")),
-						config.showPlayerList, v -> config.showPlayerList = v),
 				intOption("options.minty_radar.height_threshold", 1, 16, (int) Math.round(config.verticalThreshold),
 						v -> Component.translatable("options.minty_radar.blocks", v),
-						v -> config.verticalThreshold = v));
+						v -> config.verticalThreshold = v),
+				OptionInstance.createBoolean("options.minty_radar.compass",
+						tooltip("options.minty_radar.compass.tooltip"),
+						config.showCompass, v -> config.showCompass = v),
+				OptionInstance.createBoolean("options.minty_radar.rings",
+						tooltip("options.minty_radar.rings.tooltip"),
+						config.showRings, v -> config.showRings = v),
+				enumOption("options.minty_radar.mob_mode", RadarConfig.MobMode.values(), config.mobMode,
+						v -> config.mobMode = v));
+
+		list.addHeader(Component.translatable("options.minty_radar.section.player_list"));
+		list.addSmall(
+				OptionInstance.createBoolean("options.minty_radar.player_list",
+						tooltip("options.minty_radar.player_list.tooltip"),
+						config.showPlayerList, v -> config.showPlayerList = v),
+				intOption("options.minty_radar.list_limit", 0, 20, Math.min(config.listLimit, 20),
+						v -> v == 0 ? Component.translatable("options.minty_radar.list_limit.all") : Component.literal(String.valueOf(v)),
+						v -> config.listLimit = v));
+
+		list.addHeader(Component.translatable("options.minty_radar.section.alerts"));
+		list.addSmall(
+				OptionInstance.createBoolean("options.minty_radar.alert",
+						tooltip("options.minty_radar.alert.tooltip"),
+						config.alertEnabled, v -> config.alertEnabled = v),
+				intOption("options.minty_radar.alert_distance", 8, 128, config.alertDistance,
+						v -> Component.translatable("options.minty_radar.blocks", v), v -> config.alertDistance = v),
+				OptionInstance.createBoolean("options.minty_radar.alert_sound", config.alertSound,
+						v -> config.alertSound = v));
 
 		list.addHeader(Component.translatable("options.minty_radar.section.layout"));
 		list.addSmall(
@@ -75,9 +104,16 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 				intOption("options.minty_radar.margin", 0, 100, Math.min(config.margin, 100),
 						v -> Component.literal(v + "px"), v -> config.margin = v),
 				intOption("options.minty_radar.opacity", 0, 100, Math.round(config.backgroundAlpha * 100f / 255f),
-						v -> Component.literal(v + "%"), v -> config.backgroundAlpha = Math.round(v * 255f / 100f)));
+						v -> Component.literal(v + "%"), v -> config.backgroundAlpha = Math.round(v * 255f / 100f)),
+				intOption("options.minty_radar.text_scale", 50, 200, config.textScale,
+						v -> Component.literal(v + "%"), v -> config.textScale = v));
 
+		addFriendRows();
 		addKeybindRows();
+	}
+
+	private static <T> OptionInstance.TooltipSupplier<T> tooltip(String key) {
+		return OptionInstance.cachedConstantTooltip(Component.translatable(key));
 	}
 
 	private OptionInstance<Integer> rangeOption() {
@@ -95,16 +131,64 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 				new OptionInstance.IntRange(min, max), Math.clamp(initial, min, max), onChange);
 	}
 
-	/** Cycle button over an enum. Each constant is labelled via {@code <key>.<constant_name>}. */
+	/**
+	 * Cycle button over an enum. Each constant is labelled via {@code <key>.<constant_name>}.
+	 * Only the value is returned: the cycle button adds the "Caption: " prefix itself.
+	 */
 	private static <E extends Enum<E>> OptionInstance<E> enumOption(String key, E[] values, E initial,
 			OptionInstance.ValueUpdateListener<E> onChange) {
 		Codec<E> codec = Codec.STRING.xmap(
 				name -> Arrays.stream(values).filter(e -> e.name().equals(name)).findFirst().orElse(initial),
 				Enum::name);
 		return new OptionInstance<>(key, OptionInstance.noTooltip(),
-				(caption, v) -> Options.genericValueLabel(caption,
-						Component.translatable(key + "." + v.name().toLowerCase(Locale.ROOT))),
+				(caption, v) -> Component.translatable(key + "." + v.name().toLowerCase(Locale.ROOT)),
 				new OptionInstance.Enum<>(List.of(values), codec), initial, onChange);
+	}
+
+	// --- Friends --------------------------------------------------------------------
+
+	/** Friend display mode, a name box with an Add button, then one row per friend. */
+	private void addFriendRows() {
+		list.addHeader(Component.translatable("options.minty_radar.section.friends"));
+		list.addSmall(enumOption("options.minty_radar.friend_mode", RadarConfig.FriendMode.values(),
+				config.friendMode, v -> config.friendMode = v));
+
+		friendBox = new EditBox(font, Button.DEFAULT_WIDTH, Button.DEFAULT_HEIGHT,
+				Component.translatable("options.minty_radar.friend_name"));
+		friendBox.setMaxLength(16);
+		friendBox.setHint(Component.translatable("options.minty_radar.friend_name"));
+		Button addButton = Button.builder(Component.translatable("options.minty_radar.friend_add"), b -> addFriend()).build();
+		addButton.active = false;
+		// Only allow Add for a valid username that isn't already a friend.
+		friendBox.setResponder(value -> {
+			String name = value.trim();
+			addButton.active = RadarConfig.isValidUsername(name) && !config.isFriend(name);
+		});
+		list.addSmall(friendBox, addButton);
+
+		for (String friend : config.friends) {
+			Button nameButton = Button.builder(Component.literal(friend), b -> {}).build();
+			nameButton.active = false; // just a label
+			Button removeButton = Button.builder(Component.translatable("options.minty_radar.friend_remove"), b -> {
+				config.removeFriend(friend);
+				rebuildKeepingScroll();
+			}).build();
+			list.addSmall(nameButton, removeButton);
+		}
+	}
+
+	private void addFriend() {
+		if (friendBox != null && config.addFriend(friendBox.getValue())) {
+			rebuildKeepingScroll();
+		}
+	}
+
+	/** Rebuilds the list (to show friend changes) without jumping back to the top. */
+	private void rebuildKeepingScroll() {
+		double scroll = list.scrollAmount();
+		listening = null;
+		rebuildWidgets();
+		list.setScrollAmount(scroll);
 	}
 
 	// --- Keybinds -------------------------------------------------------------------
@@ -136,6 +220,12 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 			rebind(listening, event.key() == InputConstants.KEY_ESCAPE
 					? InputConstants.UNKNOWN
 					: InputConstants.getKey(event));
+			return true;
+		}
+		// Enter in the friend name box works like the Add button.
+		if (friendBox != null && friendBox.isFocused()
+				&& (event.key() == InputConstants.KEY_RETURN || event.key() == InputConstants.KEY_NUMPADENTER)) {
+			addFriend();
 			return true;
 		}
 		return super.keyPressed(event);
