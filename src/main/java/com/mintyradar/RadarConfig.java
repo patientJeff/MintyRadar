@@ -1,4 +1,4 @@
-package com.radar.project;
+package com.mintyradar;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -12,14 +12,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * User-editable settings, persisted as JSON in {@code config/player_radar.json}.
+ * User-editable settings, persisted as JSON in {@code config/minty_radar.json}.
  * Toggle state and zoom level are saved automatically when changed via keybind.
  */
 public final class RadarConfig {
 	/** Radar radius steps (in blocks) cycled through by the zoom keybinds. */
 	public static final int[] RANGE_STEPS = {32, 48, 64, 96, 128};
 
-	private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("player_radar.json");
+	private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("minty_radar.json");
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	public enum Corner { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT }

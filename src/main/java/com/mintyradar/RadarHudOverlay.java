@@ -1,4 +1,4 @@
-package com.radar.project;
+package com.mintyradar;
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
 import net.minecraft.client.DeltaTracker;
@@ -133,7 +133,7 @@ public final class RadarHudOverlay implements HudElement {
 		if (count != headerCount || config.range() != headerRange) {
 			headerCount = count;
 			headerRange = config.range();
-			header = Component.translatable("hud.player_radar.players", count, headerRange);
+			header = Component.translatable("hud.minty_radar.players", count, headerRange);
 		}
 
 		// Fit as many rows as the screen allows, reserving one for "+N more" if needed.
@@ -173,7 +173,7 @@ public final class RadarHudOverlay implements HudElement {
 		}
 
 		if (more > 0) {
-			drawListText(g, font, Component.translatable("hud.player_radar.more", more), edge, y, right, DISTANCE_COLOR);
+			drawListText(g, font, Component.translatable("hud.minty_radar.more", more), edge, y, right, DISTANCE_COLOR);
 		}
 	}
 

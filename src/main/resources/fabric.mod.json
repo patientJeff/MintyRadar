@@ -1,19 +1,19 @@
 {
     "schemaVersion": 1,
-    "id": "player_radar",
+    "id": "minty_radar",
     "version": "${version}",
-    "name": "Player Radar",
+    "name": "Minty Radar",
     "description": "See your enemies before they come",
     "authors": ["patientJeff"],
     "license": "MIT",
-    "icon": "assets/player_radar/icon.png",
+    "icon": "assets/minty_radar/icon.png",
     "environment": "client",
     "entrypoints": {
         "client": [
-            "com.radar.project.RadarClientMod"
+            "com.mintyradar.RadarClientMod"
         ],
         "modmenu": [
-            "com.radar.project.ModMenuIntegration"
+            "com.mintyradar.ModMenuIntegration"
         ]
     },
     "depends": {

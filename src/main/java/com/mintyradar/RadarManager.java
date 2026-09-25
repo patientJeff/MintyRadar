@@ -1,4 +1,4 @@
-package com.radar.project;
+package com.mintyradar;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;

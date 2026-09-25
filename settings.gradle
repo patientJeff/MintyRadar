@@ -8,4 +8,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'player_radar'
+rootProject.name = 'minty_radar'

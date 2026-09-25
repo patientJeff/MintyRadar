@@ -1,4 +1,4 @@
-package com.radar.project;
+package com.mintyradar;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.Codec;
@@ -37,53 +37,53 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 
 	public RadarConfigScreen(Screen parent) {
 		super(parent, net.minecraft.client.Minecraft.getInstance().options,
-				Component.translatable("options.player_radar.title"));
+				Component.translatable("options.minty_radar.title"));
 	}
 
 	@Override
 	protected void addOptions() {
-		list.addHeader(Component.translatable("options.player_radar.section.general"));
+		list.addHeader(Component.translatable("options.minty_radar.section.general"));
 		list.addSmall(
-				OptionInstance.createBoolean("options.player_radar.enabled", config.enabled,
+				OptionInstance.createBoolean("options.minty_radar.enabled", config.enabled,
 						v -> config.enabled = v),
-				OptionInstance.createBoolean("options.player_radar.show_map",
-						OptionInstance.cachedConstantTooltip(Component.translatable("options.player_radar.show_map.tooltip")),
+				OptionInstance.createBoolean("options.minty_radar.show_map",
+						OptionInstance.cachedConstantTooltip(Component.translatable("options.minty_radar.show_map.tooltip")),
 						config.showMap, v -> config.showMap = v),
 				rangeOption());
 
-		list.addHeader(Component.translatable("options.player_radar.section.display"));
+		list.addHeader(Component.translatable("options.minty_radar.section.display"));
 		list.addSmall(
-				enumOption("options.player_radar.blip_style", RadarConfig.BlipStyle.values(), config.blipStyle,
+				enumOption("options.minty_radar.blip_style", RadarConfig.BlipStyle.values(), config.blipStyle,
 						v -> config.blipStyle = v),
-				intOption("options.player_radar.head_size", 4, 16, config.headSize,
+				intOption("options.minty_radar.head_size", 4, 16, config.headSize,
 						v -> Component.literal(v + "px"), v -> config.headSize = v),
-				enumOption("options.player_radar.name_mode", RadarConfig.NameMode.values(), config.nameMode,
+				enumOption("options.minty_radar.name_mode", RadarConfig.NameMode.values(), config.nameMode,
 						v -> config.nameMode = v),
-				OptionInstance.createBoolean("options.player_radar.player_list",
-						OptionInstance.cachedConstantTooltip(Component.translatable("options.player_radar.player_list.tooltip")),
+				OptionInstance.createBoolean("options.minty_radar.player_list",
+						OptionInstance.cachedConstantTooltip(Component.translatable("options.minty_radar.player_list.tooltip")),
 						config.showPlayerList, v -> config.showPlayerList = v),
-				intOption("options.player_radar.height_threshold", 1, 16, (int) Math.round(config.verticalThreshold),
-						v -> Component.translatable("options.player_radar.blocks", v),
+				intOption("options.minty_radar.height_threshold", 1, 16, (int) Math.round(config.verticalThreshold),
+						v -> Component.translatable("options.minty_radar.blocks", v),
 						v -> config.verticalThreshold = v));
 
-		list.addHeader(Component.translatable("options.player_radar.section.layout"));
+		list.addHeader(Component.translatable("options.minty_radar.section.layout"));
 		list.addSmall(
-				enumOption("options.player_radar.corner", RadarConfig.Corner.values(), config.corner,
+				enumOption("options.minty_radar.corner", RadarConfig.Corner.values(), config.corner,
 						v -> config.corner = v),
-				intOption("options.player_radar.size", 40, 256, config.size,
+				intOption("options.minty_radar.size", 40, 256, config.size,
 						v -> Component.literal(v + "px"), v -> config.size = v),
-				intOption("options.player_radar.margin", 0, 100, Math.min(config.margin, 100),
+				intOption("options.minty_radar.margin", 0, 100, Math.min(config.margin, 100),
 						v -> Component.literal(v + "px"), v -> config.margin = v),
-				intOption("options.player_radar.opacity", 0, 100, Math.round(config.backgroundAlpha * 100f / 255f),
+				intOption("options.minty_radar.opacity", 0, 100, Math.round(config.backgroundAlpha * 100f / 255f),
 						v -> Component.literal(v + "%"), v -> config.backgroundAlpha = Math.round(v * 255f / 100f)));
 
 		addKeybindRows();
 	}
 
 	private OptionInstance<Integer> rangeOption() {
-		return new OptionInstance<>("options.player_radar.range", OptionInstance.noTooltip(),
+		return new OptionInstance<>("options.minty_radar.range", OptionInstance.noTooltip(),
 				(caption, index) -> Options.genericValueLabel(caption,
-						Component.translatable("options.player_radar.blocks", RadarConfig.RANGE_STEPS[index])),
+						Component.translatable("options.minty_radar.blocks", RadarConfig.RANGE_STEPS[index])),
 				new OptionInstance.IntRange(0, RadarConfig.RANGE_STEPS.length - 1),
 				config.rangeIndex, v -> config.rangeIndex = v);
 	}
@@ -110,7 +110,7 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 	// --- Keybinds -------------------------------------------------------------------
 
 	private void addKeybindRows() {
-		list.addHeader(Component.translatable("key.category.player_radar.radar"));
+		list.addHeader(Component.translatable("key.category.minty_radar.radar"));
 
 		mappings = Keybindings.all();
 		keyButtons = new Button[mappings.size()];

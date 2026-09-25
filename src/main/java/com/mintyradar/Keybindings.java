@@ -1,4 +1,4 @@
-package com.radar.project;
+package com.mintyradar;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 
 /**
- * Registers the radar keybinds (rebindable under Options → Controls → Player Radar)
+ * Registers the radar keybinds (rebindable under Options → Controls → Minty Radar)
  * and translates key presses into config changes.
  */
 public final class Keybindings {
@@ -24,11 +24,11 @@ public final class Keybindings {
 		KeyMapping.Category category = KeyMapping.Category.register(RadarClientMod.id("radar"));
 
 		toggle = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-				"key.player_radar.toggle", InputConstants.Type.KEYBOARD, InputConstants.KEY_R, category));
+				"key.minty_radar.toggle", InputConstants.Type.KEYBOARD, InputConstants.KEY_R, category));
 		zoomIn = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-				"key.player_radar.zoom_in", InputConstants.Type.KEYBOARD, InputConstants.KEY_EQUALS, category));
+				"key.minty_radar.zoom_in", InputConstants.Type.KEYBOARD, InputConstants.KEY_EQUALS, category));
 		zoomOut = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-				"key.player_radar.zoom_out", InputConstants.Type.KEYBOARD, InputConstants.KEY_MINUS, category));
+				"key.minty_radar.zoom_out", InputConstants.Type.KEYBOARD, InputConstants.KEY_MINUS, category));
 	}
 
 	/** All radar keybinds, in the order they appear in the settings screen. */
@@ -44,8 +44,8 @@ public final class Keybindings {
 			config.enabled = !config.enabled;
 			changed = true;
 			notify(client, Component.translatable(config.enabled
-					? "message.player_radar.enabled"
-					: "message.player_radar.disabled"));
+					? "message.minty_radar.enabled"
+					: "message.minty_radar.disabled"));
 		}
 
 		while (zoomIn.consumeClick()) {
@@ -62,7 +62,7 @@ public final class Keybindings {
 	}
 
 	private static void notifyRange(Minecraft client, RadarConfig config) {
-		notify(client, Component.translatable("message.player_radar.range", config.range()));
+		notify(client, Component.translatable("message.minty_radar.range", config.range()));
 	}
 
 	/** Shows feedback in the action bar rather than spamming chat. */
