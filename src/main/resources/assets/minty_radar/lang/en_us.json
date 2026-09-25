@@ -3,6 +3,7 @@
     "key.minty_radar.toggle": "Toggle Radar",
     "key.minty_radar.zoom_in": "Radar Zoom In",
     "key.minty_radar.zoom_out": "Radar Zoom Out",
+    "key.minty_radar.open_settings": "Open Radar Settings",
     "message.minty_radar.enabled": "Minty Radar: ON",
     "message.minty_radar.disabled": "Minty Radar: OFF",
     "message.minty_radar.range": "Radar range: %s blocks",
