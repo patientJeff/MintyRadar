@@ -31,7 +31,7 @@ public final class Keybindings {
 		zoomOut = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.minty_radar.zoom_out", InputConstants.Type.KEYBOARD, InputConstants.KEY_MINUS, category));
 		openSettings = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-				"key.minty_radar.open_settings", InputConstants.Type.KEYBOARD, InputConstants.KEY_O, category));
+				"key.minty_radar.open_settings", InputConstants.Type.KEYBOARD, InputConstants.KEY_K, category));
 	}
 
 	/** All radar keybinds, in the order they appear in the settings screen. */

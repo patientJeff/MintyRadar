@@ -10,6 +10,11 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * User-editable settings, persisted as JSON in {@code config/minty_radar.json}.
@@ -30,26 +35,65 @@ public final class RadarConfig {
 	/** How players are drawn on the radar. */
 	public enum BlipStyle { HEADS, DOTS }
 
+	public enum Shape { SQUARE, CIRCLE }
+
+	/** Which mobs appear on the radar. Mobs never appear in the player list. */
+	public enum MobMode { OFF, HOSTILE, ALL }
+
+	/** How friends are shown: marked with a star, or left off the radar and list entirely. */
+	public enum FriendMode { STAR, HIDE }
+
+	// --- General ---
 	public boolean enabled = true;
 	/** Show the radar map panel. When off, only the player list is shown. */
 	public boolean showMap = true;
 	/** Index into {@link #RANGE_STEPS}. */
 	public int rangeIndex = 2;
+
+	// --- Radar display ---
+	public Shape shape = Shape.SQUARE;
+	public BlipStyle blipStyle = BlipStyle.HEADS;
+	/** Width/height of player heads in GUI pixels (face plus hat layer). */
+	public int headSize = 8;
+	public NameMode nameMode = NameMode.WHILE_SNEAKING;
+	/** Height difference (blocks) beyond which the above/below indicators are shown. */
+	public double verticalThreshold = 3.0;
+	/** N/E/S/W letters around the radar edge. */
+	public boolean showCompass = true;
+	/** Circles at half and full range, labelled with their distance. */
+	public boolean showRings = true;
+	public MobMode mobMode = MobMode.OFF;
+
+	// --- Player list ---
+	/** Show the list of tracked players and their distances next to the radar. */
+	public boolean showPlayerList = true;
+	/** Maximum players in the list. 0 means no limit (only the screen height limits it). */
+	public int listLimit = 0;
+
+	// --- Alerts ---
+	/** Action-bar message when a player comes within {@link #alertDistance}. */
+	public boolean alertEnabled = true;
+	public int alertDistance = 48;
+	public boolean alertSound = true;
+
+	// --- Layout ---
+	public Corner corner = Corner.TOP_LEFT;
 	/** Radar width/height in GUI pixels. */
 	public int size = 90;
 	/** Distance from the screen edges in GUI pixels. */
 	public int margin = 6;
-	public Corner corner = Corner.TOP_LEFT;
 	/** Background opacity, 0-255. */
 	public int backgroundAlpha = 0x90;
-	/** Height difference (blocks) beyond which the above/below indicators are shown. */
-	public double verticalThreshold = 3.0;
-	/** Show the list of all tracked players and their distances next to the radar. */
-	public boolean showPlayerList = true;
-	public NameMode nameMode = NameMode.WHILE_SNEAKING;
-	public BlipStyle blipStyle = BlipStyle.HEADS;
-	/** Width/height of player heads in GUI pixels (face plus hat layer). */
-	public int headSize = 8;
+	/** Scale for all radar text (names, list, compass, ring labels), in percent. */
+	public int textScale = 100;
+
+	// --- Friends ---
+	public FriendMode friendMode = FriendMode.STAR;
+	/** Friend usernames, as entered. Matching ignores case. */
+	public List<String> friends = new ArrayList<>();
+
+	/** Lower-cased copy of {@link #friends} for fast lookups. Not saved. */
+	private transient Set<String> friendLookup = new HashSet<>();
 
 	public int range() {
 		return RANGE_STEPS[rangeIndex];
@@ -67,6 +111,33 @@ public final class RadarConfig {
 		if (rangeIndex == RANGE_STEPS.length - 1) return false;
 		rangeIndex++;
 		return true;
+	}
+
+	public float textScale() {
+		return textScale / 100f;
+	}
+
+	public boolean isFriend(String name) {
+		return friendLookup.contains(name.toLowerCase(Locale.ROOT));
+	}
+
+	/** Adds a friend by username. Returns false if the name is invalid or already listed. */
+	public boolean addFriend(String name) {
+		String trimmed = name.trim();
+		if (!isValidUsername(trimmed) || isFriend(trimmed)) return false;
+		friends.add(trimmed);
+		friendLookup.add(trimmed.toLowerCase(Locale.ROOT));
+		return true;
+	}
+
+	public void removeFriend(String name) {
+		friends.removeIf(f -> f.equalsIgnoreCase(name));
+		friendLookup.remove(name.toLowerCase(Locale.ROOT));
+	}
+
+	/** Minecraft usernames: 1-16 letters, digits or underscores. */
+	public static boolean isValidUsername(String name) {
+		return name.matches("[A-Za-z0-9_]{1,16}");
 	}
 
 	public static RadarConfig load() {
@@ -95,16 +166,31 @@ public final class RadarConfig {
 		}
 	}
 
-	/** Clamps hand-edited values into safe ranges. */
+	/** Clamps hand-edited values into safe ranges and fills in anything missing. */
 	private void sanitize() {
 		rangeIndex = Math.clamp(rangeIndex, 0, RANGE_STEPS.length - 1);
 		size = Math.clamp(size, 40, 256);
 		margin = Math.clamp(margin, 0, 200);
 		backgroundAlpha = Math.clamp(backgroundAlpha, 0, 255);
 		verticalThreshold = Math.clamp(verticalThreshold, 0.5, 64.0);
+		headSize = Math.clamp(headSize, 4, 16);
+		listLimit = Math.clamp(listLimit, 0, 50);
+		alertDistance = Math.clamp(alertDistance, 8, 128);
+		textScale = Math.clamp(textScale, 50, 200);
 		if (corner == null) corner = Corner.TOP_LEFT;
 		if (nameMode == null) nameMode = NameMode.WHILE_SNEAKING;
 		if (blipStyle == null) blipStyle = BlipStyle.HEADS;
-		headSize = Math.clamp(headSize, 4, 16);
+		if (shape == null) shape = Shape.SQUARE;
+		if (mobMode == null) mobMode = MobMode.OFF;
+		if (friendMode == null) friendMode = FriendMode.STAR;
+
+		// A hand-edited file may hold duplicates, invalid names or nulls, so rebuild the
+		// friends list (and its lookup set) from scratch.
+		List<String> loaded = friends == null ? List.of() : friends;
+		friends = new ArrayList<>();
+		friendLookup = new HashSet<>();
+		for (String name : loaded) {
+			if (name != null) addFriend(name);
+		}
 	}
 }
