@@ -62,6 +62,8 @@ public final class RadarManager {
 		public float x;
 		public float y;
 		public boolean hostile;
+		/** The mob's face to draw, or null to draw a dot. */
+		public MobHeads.Head head;
 	}
 
 	/** Tick-time snapshot of a single player. It also serves as a row in the player list. */
@@ -80,6 +82,7 @@ public final class RadarManager {
 	private static final class TrackedMob {
 		Entity entity;
 		boolean hostile;
+		MobHeads.Head head;
 	}
 
 	private static final Comparator<Tracked> BY_DISTANCE = Comparator.comparingDouble(t -> t.distSq);
@@ -174,10 +177,14 @@ public final class RadarManager {
 			TrackedMob entry = obtain(mobs, count, TrackedMob::new);
 			entry.entity = mob;
 			entry.hostile = hostile;
+			entry.head = MobHeads.lookup(mob); // at tick rate, so variant changes show up
 			count++;
 		}
 
-		for (int i = count; i < mobCount; i++) mobs.get(i).entity = null;
+		for (int i = count; i < mobCount; i++) {
+			mobs.get(i).entity = null;
+			mobs.get(i).head = null;
+		}
 		mobCount = count;
 	}
 
@@ -269,6 +276,7 @@ public final class RadarManager {
 			b.x = sx;
 			b.y = sy;
 			b.hostile = m.hostile;
+			b.head = m.head;
 		}
 		return n;
 	}
@@ -307,7 +315,10 @@ public final class RadarManager {
 	}
 
 	private void clearMobs() {
-		for (int i = 0; i < mobCount; i++) mobs.get(i).entity = null;
+		for (int i = 0; i < mobCount; i++) {
+			mobs.get(i).entity = null;
+			mobs.get(i).head = null;
+		}
 		mobCount = 0;
 	}
 

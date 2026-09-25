@@ -32,6 +32,7 @@ public class RadarClientMod implements ClientModInitializer {
 			Keybindings.handleInput(client, config);
 			manager.tick(client, config);
 			alerts.tick(client, config, manager);
+			PingTracker.tick(client, config);
 		});
 
 		// Drawn just below chat so chat messages stay readable on top of the radar.

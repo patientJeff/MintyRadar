@@ -1,0 +1,12 @@
+{
+    "required": true,
+    "package": "com.mintyradar.mixin",
+    "compatibilityLevel": "JAVA_25",
+    "client": [
+        "ClientPacketListenerMixin",
+        "PlayerTabOverlayMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}
