@@ -69,6 +69,15 @@
     "options.minty_radar.margin": "Margin",
     "options.minty_radar.opacity": "Background",
     "options.minty_radar.text_scale": "Text Size",
+    "options.minty_radar.move": "Move Radar...",
+    "options.minty_radar.move.title": "Move Radar",
+    "options.minty_radar.move.hint": "Drag the radar to move it",
+    "options.minty_radar.move.hint_list": "Drag the box to move the player list",
+    "options.minty_radar.move.reset": "Reset to Corner",
+
+    "options.minty_radar.section.tab_list": "Tab List",
+    "options.minty_radar.tab_ping": "Ping in Tab List",
+    "options.minty_radar.tab_ping.tooltip": "Show each player's ping in milliseconds instead of signal bars. Your own ping is measured live every second. Other players' pings come from the server, which updates them every few seconds.",
 
     "options.minty_radar.section.friends": "Friends",
     "options.minty_radar.friend_mode": "Friends",

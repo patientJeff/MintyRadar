@@ -79,24 +79,62 @@ public final class RadarHudOverlay implements HudElement {
 		if (mc.gui.hud.isHidden() || mc.getDebugOverlay().showDebugScreen()) return;
 
 		Font font = mc.font;
-		// With the map hidden the panel collapses to zero size and the player list moves
-		// to the top of the screen, keeping the corner's left/right side.
-		int size = config.showMap ? config.size : 0;
-
-		// Top-left of the radar panel for the configured corner.
-		boolean right = config.corner == RadarConfig.Corner.TOP_RIGHT || config.corner == RadarConfig.Corner.BOTTOM_RIGHT;
-		boolean bottom = config.showMap
-				&& (config.corner == RadarConfig.Corner.BOTTOM_LEFT || config.corner == RadarConfig.Corner.BOTTOM_RIGHT);
-		int x0 = right ? g.guiWidth() - config.margin - size : config.margin;
-		int y0 = bottom ? g.guiHeight() - config.margin - size : config.margin;
+		Layout layout = layout(config, g.guiWidth(), g.guiHeight());
 
 		if (config.showMap) {
-			drawMap(g, font, self, deltaTracker, x0, y0, size);
+			drawMap(g, font, self, deltaTracker, layout.x0, layout.y0, layout.size);
 		}
 
 		if (config.showPlayerList) {
-			drawPlayerList(g, font, x0, y0, size, right, bottom);
+			drawPlayerList(g, font, layout.x0, layout.y0, layout.size, layout.right, layout.bottom);
 		}
+	}
+
+	/**
+	 * Where things go on screen.
+	 *
+	 * @param x0, y0, size the radar panel (size 0 when the map is hidden: then x0/y0 is
+	 *                     the point the player list hangs from)
+	 * @param right        align the player list to the right edge
+	 * @param bottom       grow the player list upwards, above the panel
+	 * @param boxX, boxY   the radar's full-size box, which the Move Radar screen drags
+	 */
+	public record Layout(int x0, int y0, int size, boolean right, boolean bottom, int boxX, int boxY) {
+	}
+
+	/** Works out the layout for the configured corner or custom (dragged) position. */
+	public static Layout layout(RadarConfig config, int guiWidth, int guiHeight) {
+		int s = config.size;
+		int boxX;
+		int boxY;
+		boolean right;
+		boolean bottom;
+		if (config.customPosition) {
+			boxX = Math.round(config.posX * Math.max(0, guiWidth - s));
+			boxY = Math.round(config.posY * Math.max(0, guiHeight - s));
+			// The list goes on whichever side has more room.
+			right = boxX + s / 2 > guiWidth / 2;
+			bottom = boxY + s / 2 > guiHeight / 2;
+		} else {
+			right = config.corner == RadarConfig.Corner.TOP_RIGHT || config.corner == RadarConfig.Corner.BOTTOM_RIGHT;
+			bottom = config.corner == RadarConfig.Corner.BOTTOM_LEFT || config.corner == RadarConfig.Corner.BOTTOM_RIGHT;
+			boxX = right ? guiWidth - config.margin - s : config.margin;
+			boxY = bottom ? guiHeight - config.margin - s : config.margin;
+		}
+
+		if (config.showMap) {
+			return new Layout(boxX, boxY, s, right, bottom, boxX, boxY);
+		}
+		// Map hidden: the list takes the radar's place.
+		int edge = right ? boxX + s : boxX;
+		if (!config.customPosition) {
+			// Corner mode moves the list to the top of the screen, on the corner's side.
+			return new Layout(edge, config.margin, 0, right, false, boxX, boxY);
+		}
+		// Custom position: hang the list from the box, growing away from the nearer edge.
+		return bottom
+				? new Layout(edge, boxY + s, 0, right, true, boxX, boxY)
+				: new Layout(edge, boxY, 0, right, false, boxX, boxY);
 	}
 
 	// --- Map ------------------------------------------------------------------------
