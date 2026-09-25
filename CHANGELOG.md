@@ -12,6 +12,12 @@ Newest version first. Downloads for every version are on the [Releases](https://
   - Your own ping is measured live every second, like F3's network chart.
   - Other players' pings come from the server, which is the only source a client has.
   - Turn it off under Settings → **Tab List** to get the vanilla bars back.
+- **Mob heads.** Mobs on the radar now show as their own faces (with the outer layer, like zombies' hats) instead of dots. They come from each mob's real model and texture, so every mob and variant looks right. Hostile mobs get a red frame and others a gray frame. Turn mobs on under Settings → Radar Display → **Mobs**.
+- **Reset to Corner** button next to **Move Radar...** in the settings.
+
+### Fixed
+- **Move Radar:** dragging the radar didn't work with a real mouse. It now follows your cursor.
+- **Friends:** adding or removing a friend no longer duplicates the settings screen or makes it stop responding. The name box stays selected, so you can add several friends in a row.
 
 ---
 
