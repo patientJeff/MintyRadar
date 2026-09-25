@@ -1,4 +1,4 @@
-package com.radar.project;
+package com.mintyradar;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * {@link RadarManager} update and the {@link RadarHudOverlay} HUD element.
  */
 public class RadarClientMod implements ClientModInitializer {
-	public static final String MOD_ID = "player_radar";
+	public static final String MOD_ID = "minty_radar";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	private static RadarConfig config;
@@ -36,7 +36,7 @@ public class RadarClientMod implements ClientModInitializer {
 		HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT, id("radar"),
 				new RadarHudOverlay(config, manager));
 
-		LOGGER.info("Player Radar initialized (range {} blocks, {})",
+		LOGGER.info("Minty Radar initialized (range {} blocks, {})",
 				config.range(), config.enabled ? "enabled" : "disabled");
 	}
 
