@@ -19,7 +19,7 @@
 - **Names on the radar.** Show player names above their heads always, only while you hold sneak, or never.
 - **Player list.** Every player the radar can see, nearest first, with their head, name and distance in blocks.
 - **Zoom.** Radar range of 32, 48, 64, 96 or 128 blocks.
-- **Settings in Mod Menu.** Every setting and keybind can be changed in game.
+- **In-game settings screen.** Every setting and keybind can be changed in game. Press `O`, or use Mod Menu's Configure button.
 - **Light on performance.** Player data updates 20 times a second, and each frame only does simple maths. Objects are reused rather than recreated, so there's no memory buildup.
 
 Spectators and invisible players aren't shown.
@@ -31,7 +31,7 @@ Spectators and invisible players aren't shown.
 | Minecraft | 26.3 |
 | [Fabric Loader](https://fabricmc.net/use/installer/) | 0.19.0 or newer |
 | [Fabric API](https://modrinth.com/mod/fabric-api) | Any version for 26.3 (required) |
-| [Mod Menu](https://modrinth.com/mod/modmenu) | 21.0.0 or newer (optional, needed for the settings screen) |
+| [Mod Menu](https://modrinth.com/mod/modmenu) | 21.0.0 or newer (optional, adds a Configure button) |
 
 Minty Radar is **client-side only**, so servers don't need it installed.
 
@@ -39,7 +39,7 @@ Minty Radar is **client-side only**, so servers don't need it installed.
 
 1. Install Fabric Loader for Minecraft 26.3 with the [Fabric installer](https://fabricmc.net/use/installer/).
 2. Download `minty_radar-x.x.x.jar` from the [Releases](https://github.com/patientJeff/MintyRadar/releases) page, or [build it yourself](#building-from-source).
-3. Put it in your `mods` folder along with Fabric API, and Mod Menu if you want the settings screen.
+3. Put it in your `mods` folder along with Fabric API. Mod Menu is optional.
    - On Windows, the `mods` folder is at `%appdata%\.minecraft\mods`.
 4. Launch Minecraft with the **fabric-loader-26.3** profile.
 
@@ -50,13 +50,14 @@ Minty Radar is **client-side only**, so servers don't need it installed.
 | `R` | Turn the radar on or off |
 | `=` | Zoom in (smaller range) |
 | `-` | Zoom out (larger range) |
+| `O` | Open the settings screen |
 | Hold **Sneak** | Show player names on the radar (with the default setting) |
 
-You can change keybinds under **Options → Controls → Key Binds → Minty Radar**, or in the Mod Menu settings screen.
+You can change keybinds under **Options → Controls → Key Binds → Minty Radar**, or in the Minty Radar settings screen.
 
 ## Settings
 
-Open **Mods → Minty Radar → ⚙** (requires Mod Menu). Changes apply straight away and are saved to `config/minty_radar.json`.
+Press `O` in game, or with Mod Menu installed, open **Mods → Minty Radar → ⚙**. Changes apply straight away and are saved to `config/minty_radar.json`.
 
 | Setting | Default | Description |
 |---|---|---|
@@ -108,8 +109,8 @@ To try it in a development copy of the game, which also loads Mod Menu:
 | `RadarHudOverlay` | Draws the radar, markers, height indicators, names and the player list |
 | `RadarConfig` | Settings, saved as JSON |
 | `RadarConfigScreen` | The settings screen, built from vanilla menu components |
-| `Keybindings` | Keybind registration and handling |
-| `ModMenuIntegration` | Connects the settings screen to Mod Menu |
+| `Keybindings` | Keybind registration and handling, including the key that opens the settings screen |
+| `ModMenuIntegration` | Adds the settings screen to Mod Menu's Configure button (only used when Mod Menu is installed) |
 
 ## License
 
