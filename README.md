@@ -22,7 +22,7 @@
 - **Player alerts.** A message such as "Steve is 40m away", with an optional sound, when a player comes within a distance you choose.
 - **Player list.** Players the radar can see, nearest first, with their head, name and distance in blocks. You can limit how many are shown.
 - **Friends.** Add friends by username, then choose whether they show with a mint ★ or are hidden completely. Friends never trigger alerts.
-- **Mobs (optional).** Show hostile mobs as red dots, and optionally other mobs as gray dots. Mobs only appear on the map, never in the player list.
+- **Mobs (optional).** Show hostile mobs, or all mobs, as their own heads, taken from the game's models so every mob and variant looks right. Hostile mobs get a red frame and others a gray frame. Mobs only appear on the map, never in the player list.
 - **Adjustable text size** for names, the list, the compass and ring labels.
 - **Place it anywhere.** Drag the radar to any spot on screen with **Move Radar...** in the settings, or keep it in a corner.
 - **Ping in the tab list.** Each player's ping shows in milliseconds (e.g. `42ms`, green to red) instead of signal bars. Your own ping is measured live every second. Other players' pings come from the server, which only updates them every few seconds.
@@ -86,7 +86,7 @@ Press `K` in game, or with Mod Menu installed, open **Mods → Minty Radar → �
 | | Alert Distance | 48 blocks | How close a player must come to trigger an alert (8 to 128) |
 | | Alert Sound | On | Plays a sound with the alert |
 | Layout | Corner | Top Left | Which screen corner the radar sits in. Choosing a corner undoes a dragged position |
-| | Move Radar... | | Opens a screen where you drag the radar anywhere. **Reset to Corner** puts it back |
+| | Move Radar... / Reset to Corner | | **Move Radar...** opens a screen where you drag the radar anywhere. **Reset to Corner** puts it back |
 | | Size | 90px | Width and height of the radar |
 | | Margin | 6px | Gap between the radar and the screen edge |
 | | Background | 56% | Opacity of the radar background |
