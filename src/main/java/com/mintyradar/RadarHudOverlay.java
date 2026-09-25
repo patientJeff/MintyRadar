@@ -165,7 +165,7 @@ public final class RadarHudOverlay implements HudElement {
 			List<RadarManager.MobBlip> mobBlips = manager.getMobBlips();
 			for (int i = 0; i < mobs; i++) {
 				RadarManager.MobBlip m = mobBlips.get(i);
-				drawMob(g, cx + Math.round(m.x), cy + Math.round(m.y), m.hostile);
+				drawMob(g, cx + Math.round(m.x), cy + Math.round(m.y), m);
 			}
 		}
 
@@ -284,10 +284,38 @@ public final class RadarHudOverlay implements HudElement {
 		g.fill(cx + 2, cy + 1, cx + 3, cy + 2, SELF_COLOR);
 	}
 
-	/** 2x2 dot with a dark outline: red for hostile mobs, gray for the rest. */
-	private static void drawMob(GuiGraphicsExtractor g, int x, int y, boolean hostile) {
-		g.fill(x - 2, y - 2, x + 2, y + 2, BLIP_OUTLINE);
-		g.fill(x - 1, y - 1, x + 1, y + 1, hostile ? HOSTILE_MOB_COLOR : PASSIVE_MOB_COLOR);
+	/**
+	 * The mob's face (with hat layer if it has one), framed red for hostile mobs and
+	 * gray for the rest. Mob heads are 2px smaller than player heads so players stand
+	 * out. A mob whose face can't be found gets a small dot instead.
+	 */
+	private void drawMob(GuiGraphicsExtractor g, int x, int y, RadarManager.MobBlip m) {
+		int border = m.hostile ? HOSTILE_MOB_COLOR : PASSIVE_MOB_COLOR;
+		MobHeads.Head head = m.head;
+		if (head == null) {
+			g.fill(x - 2, y - 2, x + 2, y + 2, BLIP_OUTLINE);
+			g.fill(x - 1, y - 1, x + 1, y + 1, border);
+			return;
+		}
+
+		int s = Math.max(4, config.headSize - 2);
+		int left = x - s / 2;
+		int top = y - s / 2;
+		g.outline(left - 1, top - 1, s + 2, s + 2, border);
+		drawFace(g, head.texture(), head.face(), left, top, s);
+		if (head.hat() != null) drawFace(g, head.texture(), head.hat(), left, top, s);
+	}
+
+	/** Draws a face into an s×s box, keeping its shape (e.g. villagers' tall faces). */
+	private static void drawFace(GuiGraphicsExtractor g, net.minecraft.resources.Identifier texture,
+			MobHeads.Face face, int left, int top, int s) {
+		int w = s;
+		int h = s;
+		if (face.aspect() > 1) h = Math.max(1, Math.round(s / face.aspect()));
+		else if (face.aspect() < 1) w = Math.max(1, Math.round(s * face.aspect()));
+		int x = left + (s - w) / 2;
+		int y = top + (s - h) / 2;
+		g.blit(texture, x, y, x + w, y + h, face.u0(), face.u1(), face.v0(), face.v1());
 	}
 
 	/** Head size in GUI pixels. Out-of-range heads pinned to the edge are drawn smaller. */

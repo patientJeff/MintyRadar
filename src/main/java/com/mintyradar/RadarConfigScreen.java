@@ -37,10 +37,35 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 	/** The keybind waiting for a key press, or null when not rebinding. */
 	private KeyMapping listening;
 	private EditBox friendBox;
+	/** Scroll position to restore once the list exists, or -1 for none. */
+	private double pendingScroll;
+	/** Focus the friend name box once the list exists (after adding a friend). */
+	private boolean focusFriendBox;
 
 	public RadarConfigScreen(Screen parent) {
+		this(parent, -1, false);
+	}
+
+	private RadarConfigScreen(Screen parent, double scroll, boolean focusFriendBox) {
 		super(parent, net.minecraft.client.Minecraft.getInstance().options,
 				Component.translatable("options.minty_radar.title"));
+		this.pendingScroll = scroll;
+		this.focusFriendBox = focusFriendBox;
+	}
+
+	@Override
+	protected void init() {
+		super.init();
+		if (pendingScroll >= 0) {
+			list.setScrollAmount(pendingScroll);
+			pendingScroll = -1;
+		}
+		if (focusFriendBox && friendBox != null) {
+			// Typed keys go to the screen's focused element, so this lets you add another
+			// name straight away without clicking the box again.
+			setFocused(friendBox);
+			focusFriendBox = false;
+		}
 	}
 
 	@Override
@@ -109,8 +134,17 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 						v -> Component.literal(v + "%"), v -> config.backgroundAlpha = Math.round(v * 255f / 100f)),
 				intOption("options.minty_radar.text_scale", 50, 200, config.textScale,
 						v -> Component.literal(v + "%"), v -> config.textScale = v));
-		list.addBig(Button.builder(Component.translatable("options.minty_radar.move"),
-				b -> minecraft.gui.setScreen(new HudPositionScreen(this))).build());
+		// Move Radar opens the drag screen. Reset to Corner is only clickable while a
+		// dragged position is in use.
+		Button resetPosition = Button.builder(Component.translatable("options.minty_radar.move.reset"), b -> {
+			config.customPosition = false;
+			b.active = false;
+		}).build();
+		resetPosition.active = config.customPosition;
+		list.addSmall(
+				Button.builder(Component.translatable("options.minty_radar.move"),
+						b -> minecraft.gui.setScreen(new HudPositionScreen(this))).build(),
+				resetPosition);
 
 		list.addHeader(Component.translatable("options.minty_radar.section.tab_list"));
 		list.addSmall(OptionInstance.createBoolean("options.minty_radar.tab_ping",
@@ -180,7 +214,7 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 			nameButton.active = false; // just a label
 			Button removeButton = Button.builder(Component.translatable("options.minty_radar.friend_remove"), b -> {
 				config.removeFriend(friend);
-				rebuildKeepingScroll();
+				reopen(false);
 			}).build();
 			list.addSmall(nameButton, removeButton);
 		}
@@ -188,16 +222,17 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 
 	private void addFriend() {
 		if (friendBox != null && config.addFriend(friendBox.getValue())) {
-			rebuildKeepingScroll();
+			reopen(true); // keep typing: the name box stays focused
 		}
 	}
 
-	/** Rebuilds the list (to show friend changes) without jumping back to the top. */
-	private void rebuildKeepingScroll() {
-		double scroll = list.scrollAmount();
-		listening = null;
-		rebuildWidgets();
-		list.setScrollAmount(scroll);
+	/**
+	 * Shows friend changes by opening a fresh copy of this screen at the same scroll
+	 * position. Rebuilding in place isn't possible: vanilla's options screens add a
+	 * second list on top of the first, which duplicates everything and blocks clicks.
+	 */
+	private void reopen(boolean focusFriendBox) {
+		minecraft.gui.setScreen(new RadarConfigScreen(lastScreen, list.scrollAmount(), focusFriendBox));
 	}
 
 	// --- Keybinds -------------------------------------------------------------------

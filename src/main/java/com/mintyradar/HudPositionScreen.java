@@ -1,5 +1,6 @@
 package com.mintyradar;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -70,7 +71,8 @@ public final class HudPositionScreen extends Screen {
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		if (super.mouseClicked(event, doubleClick)) return true; // buttons first
 		RadarHudOverlay.Layout layout = RadarHudOverlay.layout(config, width, height);
-		if (event.button() == 0 && isOverBox(layout, event.x(), event.y())) {
+		// Minecraft 26.3 uses SDL input, where the left button is 1, not 0 as with GLFW.
+		if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && isOverBox(layout, event.x(), event.y())) {
 			dragging = true;
 			grabX = event.x() - layout.boxX();
 			grabY = event.y() - layout.boxY();
@@ -95,7 +97,7 @@ public final class HudPositionScreen extends Screen {
 
 	@Override
 	public boolean mouseReleased(MouseButtonEvent event) {
-		if (dragging && event.button() == 0) {
+		if (dragging && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
 			dragging = false;
 			return true;
 		}
