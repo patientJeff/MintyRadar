@@ -77,7 +77,17 @@ public final class RadarConfig {
 	public boolean alertSound = true;
 
 	// --- Layout ---
+	/** Which screen corner the radar sits in, unless {@link #customPosition} is on. */
 	public Corner corner = Corner.TOP_LEFT;
+	/** Set by dragging the radar in the Move Radar screen. Overrides {@link #corner}. */
+	public boolean customPosition = false;
+	/**
+	 * Custom position of the radar's top-left corner, as a fraction (0-1) of the free
+	 * space on screen. Fractions keep it in the same relative place when the window
+	 * or GUI scale changes.
+	 */
+	public float posX = 0f;
+	public float posY = 0f;
 	/** Radar width/height in GUI pixels. */
 	public int size = 90;
 	/** Distance from the screen edges in GUI pixels. */
@@ -86,6 +96,10 @@ public final class RadarConfig {
 	public int backgroundAlpha = 0x90;
 	/** Scale for all radar text (names, list, compass, ring labels), in percent. */
 	public int textScale = 100;
+
+	// --- Tab list ---
+	/** Show each player's ping in milliseconds in the tab list, instead of signal bars. */
+	public boolean tabPing = true;
 
 	// --- Friends ---
 	public FriendMode friendMode = FriendMode.STAR;
@@ -177,6 +191,8 @@ public final class RadarConfig {
 		listLimit = Math.clamp(listLimit, 0, 50);
 		alertDistance = Math.clamp(alertDistance, 8, 128);
 		textScale = Math.clamp(textScale, 50, 200);
+		posX = Float.isFinite(posX) ? Math.clamp(posX, 0f, 1f) : 0f;
+		posY = Float.isFinite(posY) ? Math.clamp(posY, 0f, 1f) : 0f;
 		if (corner == null) corner = Corner.TOP_LEFT;
 		if (nameMode == null) nameMode = NameMode.WHILE_SNEAKING;
 		if (blipStyle == null) blipStyle = BlipStyle.HEADS;

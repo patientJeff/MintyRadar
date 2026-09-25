@@ -97,8 +97,10 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 
 		list.addHeader(Component.translatable("options.minty_radar.section.layout"));
 		list.addSmall(
-				enumOption("options.minty_radar.corner", RadarConfig.Corner.values(), config.corner,
-						v -> config.corner = v),
+				enumOption("options.minty_radar.corner", RadarConfig.Corner.values(), config.corner, v -> {
+					config.corner = v;
+					config.customPosition = false; // choosing a corner undoes a dragged position
+				}),
 				intOption("options.minty_radar.size", 40, 256, config.size,
 						v -> Component.literal(v + "px"), v -> config.size = v),
 				intOption("options.minty_radar.margin", 0, 100, Math.min(config.margin, 100),
@@ -107,6 +109,13 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 						v -> Component.literal(v + "%"), v -> config.backgroundAlpha = Math.round(v * 255f / 100f)),
 				intOption("options.minty_radar.text_scale", 50, 200, config.textScale,
 						v -> Component.literal(v + "%"), v -> config.textScale = v));
+		list.addBig(Button.builder(Component.translatable("options.minty_radar.move"),
+				b -> minecraft.gui.setScreen(new HudPositionScreen(this))).build());
+
+		list.addHeader(Component.translatable("options.minty_radar.section.tab_list"));
+		list.addSmall(OptionInstance.createBoolean("options.minty_radar.tab_ping",
+				tooltip("options.minty_radar.tab_ping.tooltip"),
+				config.tabPing, v -> config.tabPing = v));
 
 		addFriendRows();
 		addKeybindRows();
