@@ -12,17 +12,23 @@
 
 ## Features
 
-- **Rotating mini radar.** Your view direction always points up, and players move smoothly on the radar as you turn and walk.
+- **Rotating mini radar, square or round.** Your view direction always points up, and players move smoothly on the radar as you turn and walk.
 - **Player heads.** Each player shows as their own skin face, including the hat (outer) layer. You can switch to plain dots instead.
+- **Compass.** N, E, S and W around the edge turn with your view, with north in mint.
+- **Distance rings.** Circles at half and full range, labelled with their distance (e.g. 32m and 64m).
 - **Height markers.** A **Δ** shows a player is above you, and a **∇** shows they're below you.
 - **Players beyond range.** They're pinned to the radar's edge as faded markers, so you still know which way they are.
 - **Names on the radar.** Show player names above their heads always, only while you hold sneak, or never.
-- **Player list.** Every player the radar can see, nearest first, with their head, name and distance in blocks.
+- **Player alerts.** A message such as "Steve is 40m away", with an optional sound, when a player comes within a distance you choose.
+- **Player list.** Players the radar can see, nearest first, with their head, name and distance in blocks. You can limit how many are shown.
+- **Friends.** Add friends by username, then choose whether they show with a mint ★ or are hidden completely. Friends never trigger alerts.
+- **Mobs (optional).** Show hostile mobs as red dots, and optionally other mobs as gray dots. Mobs only appear on the map, never in the player list.
+- **Adjustable text size** for names, the list, the compass and ring labels.
 - **Zoom.** Radar range of 32, 48, 64, 96 or 128 blocks.
-- **In-game settings screen.** Every setting and keybind can be changed in game. Press `O`, or use Mod Menu's Configure button.
-- **Light on performance.** Player data updates 20 times a second, and each frame only does simple maths. Objects are reused rather than recreated, so there's no memory buildup.
+- **In-game settings screen.** Every setting and keybind can be changed in game. Press `K`, or use Mod Menu's Configure button.
+- **Light on performance.** Players and mobs are collected 20 times a second, and each frame only does simple maths. Objects are reused rather than recreated, so there's no memory buildup.
 
-Spectators and invisible players aren't shown.
+Spectators and invisible players and mobs aren't shown.
 
 ## Requirements
 
@@ -50,29 +56,42 @@ Minty Radar is **client-side only**, so servers don't need it installed.
 | `R` | Turn the radar on or off |
 | `=` | Zoom in (smaller range) |
 | `-` | Zoom out (larger range) |
-| `O` | Open the settings screen |
+| `K` | Open the settings screen |
 | Hold **Sneak** | Show player names on the radar (with the default setting) |
 
 You can change keybinds under **Options → Controls → Key Binds → Minty Radar**, or in the Minty Radar settings screen.
 
 ## Settings
 
-Press `O` in game, or with Mod Menu installed, open **Mods → Minty Radar → ⚙**. Changes apply straight away and are saved to `config/minty_radar.json`.
+Press `K` in game, or with Mod Menu installed, open **Mods → Minty Radar → ⚙**. Changes apply straight away and are saved to `config/minty_radar.json`.
 
-| Setting | Default | Description |
-|---|---|---|
-| Radar | On | Shows or hides the whole overlay |
-| Map | On | Shows or hides the radar map. When it's off, only the player list shows, at the top of the screen |
-| Range | 64 blocks | Radar radius: 32, 48, 64, 96 or 128 blocks |
-| Markers | Player Heads | Player Heads or Dots |
-| Head Size | 8px | Size of the heads on the radar (4 to 16px) |
-| Player Names | While Sneaking | When names appear above radar markers: Always, While Sneaking or Never |
-| Player List | On | The list of players and distances |
-| Height Markers | 3 blocks | How far above or below you a player must be before Δ or ∇ shows |
-| Corner | Top Left | Which screen corner the radar sits in |
-| Size | 90px | Width and height of the radar |
-| Margin | 6px | Gap between the radar and the screen edge |
-| Background | 56% | Opacity of the radar background |
+| Section | Setting | Default | Description |
+|---|---|---|---|
+| General | Radar | On | Shows or hides the whole overlay |
+| | Map | On | Shows or hides the radar map. When it's off, only the player list shows, at the top of the screen |
+| | Range | 64 blocks | Radar radius: 32, 48, 64, 96 or 128 blocks |
+| Radar Display | Shape | Square | Square or Round |
+| | Markers | Player Heads | Player Heads or Dots |
+| | Head Size | 8px | Size of the heads on the radar (4 to 16px) |
+| | Player Names | While Sneaking | When names appear above radar markers: Always, While Sneaking or Never |
+| | Height Markers | 3 blocks | How far above or below you a player must be before Δ or ∇ shows |
+| | Compass | On | N/E/S/W letters around the edge |
+| | Distance Rings | On | Labelled circles at half and full range |
+| | Mobs | Off | Off, Hostile Only, or All |
+| Player List | Player List | On | The list of players and distances |
+| | List Limit | All | Most players to list (1 to 20, or All). The rest show as "+N more" |
+| Alerts | Player Alerts | On | Message when a player comes within the alert distance |
+| | Alert Distance | 48 blocks | How close a player must come to trigger an alert (8 to 128) |
+| | Alert Sound | On | Plays a sound with the alert |
+| Layout | Corner | Top Left | Which screen corner the radar sits in |
+| | Size | 90px | Width and height of the radar |
+| | Margin | 6px | Gap between the radar and the screen edge |
+| | Background | 56% | Opacity of the radar background |
+| | Text Size | 100% | Size of all radar text (50 to 200%) |
+| Friends | Friends | Show with Star | Show with Star, or Hide (left off the radar and list) |
+| | Add Friend | | Type a username and click **Add Friend** or press Enter. Each friend has a **Remove** button |
+
+Each player alerts once, and again only after they move 8 blocks beyond the alert distance and come back. Players who are already nearby when you join a world don't trigger alerts.
 
 The radar also hides while the HUD is hidden (F1) or the debug screen is open (F3).
 
@@ -105,9 +124,10 @@ To try it in a development copy of the game, which also loads Mod Menu:
 | File | Purpose |
 |---|---|
 | `RadarClientMod` | Entrypoint: loads the config and registers the keybinds, tick handler and HUD element |
-| `RadarManager` | Collects and sorts players each tick, then works out where their markers go on the radar |
-| `RadarHudOverlay` | Draws the radar, markers, height indicators, names and the player list |
-| `RadarConfig` | Settings, saved as JSON |
+| `RadarManager` | Collects and sorts players (and mobs) each tick, then works out where their markers go on the radar |
+| `RadarHudOverlay` | Draws the radar, rings, compass, markers, height indicators, names and the player list |
+| `PlayerAlerts` | Shows the alert message and plays the sound when a player comes within range |
+| `RadarConfig` | Settings and the friends list, saved as JSON |
 | `RadarConfigScreen` | The settings screen, built from vanilla menu components |
 | `Keybindings` | Keybind registration and handling, including the key that opens the settings screen |
 | `ModMenuIntegration` | Adds the settings screen to Mod Menu's Configure button (only used when Mod Menu is installed) |

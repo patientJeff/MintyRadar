@@ -22,6 +22,7 @@ public class RadarClientMod implements ClientModInitializer {
 	public void onInitializeClient() {
 		config = RadarConfig.load();
 		RadarManager manager = new RadarManager();
+		PlayerAlerts alerts = new PlayerAlerts();
 
 		Keybindings.register();
 
@@ -30,6 +31,7 @@ public class RadarClientMod implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			Keybindings.handleInput(client, config);
 			manager.tick(client, config);
+			alerts.tick(client, config, manager);
 		});
 
 		// Drawn just below chat so chat messages stay readable on top of the radar.
