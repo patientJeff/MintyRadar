@@ -5,6 +5,11 @@
     "name": "Minty Radar",
     "description": "See your enemies before they come",
     "authors": ["patientJeff"],
+    "contact": {
+        "homepage": "https://github.com/patientJeff/MintyRadar",
+        "sources": "https://github.com/patientJeff/MintyRadar",
+        "issues": "https://github.com/patientJeff/MintyRadar/issues"
+    },
     "license": "MIT",
     "icon": "assets/minty_radar/icon.png",
     "environment": "client",
