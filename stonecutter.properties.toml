@@ -1,0 +1,38 @@
+# Per-version settings for the Stonecutter build (https://stonecutter.kikugie.dev/wiki/config/properties)
+mod.id = "minty_radar"
+mod.name = "MintyRadar"
+mod.version = "1.3.0"
+
+# The Modrinth project ID (or slug) to upload to with `gradlew publishMods`.
+# Empty: publishMods only does a dry run.
+modrinth.id = ""
+
+deps.fabric_loader = "0.19.5"
+loomx.loom_version = "1.18-SNAPSHOT"
+
+["1.21.11"]
+# Minecraft range in fabric.mod.json
+mod.mc_compat = "~1.21.11"
+# Releases to mark as compatible on Modrinth
+mod.mc_releases = ["1.21.11"]
+deps.fabric_api = "0.141.6+1.21.11"
+deps.modmenu = "17.0.1"
+
+["26.1"]
+# 26.1, 26.1.1 and 26.1.2 share one jar, built against 26.1.
+mod.mc_compat = "~26.1"
+mod.mc_releases = ["26.1", "26.1.1", "26.1.2"]
+deps.fabric_api = "0.145.1+26.1"
+deps.modmenu = "18.0.2"
+
+["26.2"]
+mod.mc_compat = "~26.2"
+mod.mc_releases = ["26.2"]
+deps.fabric_api = "0.161.0+26.2"
+deps.modmenu = "20.0.3"
+
+["26.3"]
+mod.mc_compat = "~26.3"
+mod.mc_releases = ["26.3"]
+deps.fabric_api = "0.161.0+26.3"
+deps.modmenu = "21.0.0"

@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 
 /**
- * Registers the radar keybinds (rebindable under Options → Controls → Minty Radar)
+ * Registers the radar keybinds (rebindable under Options → Controls → MintyRadar)
  * and turns key presses into config changes or opening the settings screen.
  */
 public final class Keybindings {
@@ -17,6 +17,8 @@ public final class Keybindings {
 	private static KeyMapping zoomIn;
 	private static KeyMapping zoomOut;
 	private static KeyMapping openSettings;
+	/** Held, not pressed: while it's down the mouse wheel zooms the radar (see {@link #onScroll}). */
+	private static KeyMapping scrollZoom;
 
 	private Keybindings() {
 	}
@@ -32,11 +34,26 @@ public final class Keybindings {
 				"key.minty_radar.zoom_out", InputConstants.Type.KEYBOARD, InputConstants.KEY_MINUS, category));
 		openSettings = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.minty_radar.open_settings", InputConstants.Type.KEYBOARD, InputConstants.KEY_K, category));
+		scrollZoom = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+				"key.minty_radar.scroll_zoom", InputConstants.Type.KEYBOARD, InputConstants.KEY_LALT, category));
 	}
 
 	/** All radar keybinds, in the order they appear in the settings screen. */
 	public static List<KeyMapping> all() {
-		return List.of(toggle, zoomIn, zoomOut, openSettings);
+		return List.of(toggle, zoomIn, zoomOut, scrollZoom, openSettings);
+	}
+
+	/**
+	 * Mouse wheel turned with no screen open. While the scroll zoom key is held, scrolling
+	 * up zooms in and down zooms out, and the hotbar doesn't change slot.
+	 *
+	 * @return true if the scroll was used for zooming
+	 */
+	public static boolean onScroll(Minecraft client, RadarConfig config, double amount) {
+		if (!config.enabled || amount == 0 || !scrollZoom.isDown()) return false;
+		if (amount > 0 ? config.zoomIn() : config.zoomOut()) config.save();
+		notifyRange(client, config);
+		return true;
 	}
 
 	/** Called once per client tick; drains queued presses so none are lost or repeated. */
@@ -66,7 +83,7 @@ public final class Keybindings {
 		// Opens the same screen as Mod Menu's Configure button, so Mod Menu isn't required.
 		// Key presses only arrive here while no other screen is open.
 		while (openSettings.consumeClick()) {
-			client.gui.setScreen(new RadarConfigScreen(client.gui.screen()));
+			RadarClientMod.setScreen(new RadarConfigScreen(RadarClientMod.currentScreen()));
 		}
 	}
 
@@ -76,6 +93,6 @@ public final class Keybindings {
 
 	/** Shows feedback in the action bar rather than spamming chat. */
 	private static void notify(Minecraft client, Component message) {
-		if (client.player != null) client.player.sendOverlayMessage(message);
+		RadarClientMod.actionBar(message);
 	}
 }

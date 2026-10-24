@@ -117,6 +117,6 @@ public final class HudPositionScreen extends Screen {
 	@Override
 	public void onClose() {
 		config.save();
-		minecraft.gui.setScreen(parent);
+		RadarClientMod.setScreen(parent);
 	}
 }

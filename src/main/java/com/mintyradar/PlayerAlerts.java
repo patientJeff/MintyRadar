@@ -13,7 +13,8 @@ import java.util.UUID;
 
 /**
  * Warns when a player comes within the alert distance: an action-bar message such as
- * "Steve is 40m away", plus an optional sound. Friends never trigger it.
+ * "Steve is 40m away", plus an optional sound. Friends never trigger it, and with Watch
+ * List Only on, only players on the watch list do.
  *
  * <p>Each player alerts once, then re-arms after moving {@link #REARM_MARGIN} blocks
  * beyond the alert distance. That margin stops someone standing right on the edge
@@ -55,7 +56,7 @@ public final class PlayerAlerts {
 
 		for (int i = 0; i < count; i++) {
 			RadarManager.Tracked t = players.get(i);
-			if (t.friend) continue;
+			if (t.friend || config.alertWatchOnly && !config.isWatched(t.name)) continue;
 			seen.add(t.uuid);
 
 			if (t.distSq <= alertSq) {
@@ -73,7 +74,7 @@ public final class PlayerAlerts {
 	}
 
 	private static void fire(Minecraft client, RadarConfig config, RadarManager.Tracked t) {
-		client.player.sendOverlayMessage(Component.translatable("message.minty_radar.alert", t.name, t.meters));
+		RadarClientMod.actionBar(Component.translatable("message.minty_radar.alert", t.name, t.meters));
 		if (config.alertSound) {
 			client.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_PLING, 1.5f));
 		}
