@@ -1,6 +1,32 @@
-# Minty Radar update log
+# MintyRadar update log
 
 Newest version first. Downloads for every version are on the [Releases](https://github.com/patientJeff/MintyRadar/releases) page.
+
+---
+
+## 1.3.0
+
+### New
+- **Terrain map.** Settings → **Terrain**: a top-down map of the loaded ground under the radar, in map colours with height shading. **Cave View** maps the floor around your height instead (always on in the Nether). Off by default.
+- **North Up.** Settings → Radar Display → **Rotation**: north stays at the top and your arrow turns instead of the map.
+- **Facing lines** show which way each player is looking.
+- **Team colours.** Players are framed and named in their scoreboard team colour.
+- **Scroll zoom.** Hold Left Alt and scroll to zoom. The key can be changed with the other keybinds.
+- **More zoom levels:** 16, 24, 192 and 256 blocks join 32 to 128.
+- **Health in the player list**, coloured green to red. Distances now turn red as players get close.
+- **Dropped items** as yellow dots (off by default).
+- **Trails**: fading dots showing where each player has been, 3 to 120 seconds back (off by default).
+- **Alert watch list.** Turn on **Watch List Only** to get alerts only for the players you add.
+- **Invisible players** (off by default): show invisible players and mobs, marked "(invisible)" in the list.
+- **Portals** (off by default): nether portals, end portals and end gateways in loaded chunks show as purple squares.
+
+Invisible Players and Portals show things you couldn't normally see, so many servers count them as cheating. Check the rules first.
+
+### Changed
+- The settings file is now `config/MintyRadar.json`. Your old `minty_radar.json` is moved over automatically, keeping all your settings.
+- The mod is now called **MintyRadar** everywhere, and the jar is `MintyRadar-1.3.0.jar`.
+- Needs Fabric Loader 0.19.5 or newer.
+- Faster drawing: the round radar's background and the distance rings are drawn once into a texture instead of hundreds of small pieces every frame.
 
 ---
 

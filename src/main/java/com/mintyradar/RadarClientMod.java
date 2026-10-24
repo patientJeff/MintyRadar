@@ -17,11 +17,12 @@ public class RadarClientMod implements ClientModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	private static RadarConfig config;
+	private static RadarManager manager;
 
 	@Override
 	public void onInitializeClient() {
 		config = RadarConfig.load();
-		RadarManager manager = new RadarManager();
+		manager = new RadarManager();
 		PlayerAlerts alerts = new PlayerAlerts();
 
 		Keybindings.register();
@@ -39,13 +40,18 @@ public class RadarClientMod implements ClientModInitializer {
 		HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT, id("radar"),
 				new RadarHudOverlay(config, manager));
 
-		LOGGER.info("Minty Radar initialized (range {} blocks, {})",
+		LOGGER.info("MintyRadar initialized (range {} blocks, {})",
 				config.range(), config.enabled ? "enabled" : "disabled");
 	}
 
 	/** The live config shared by the HUD, keybinds and settings screen. */
 	public static RadarConfig config() {
 		return config;
+	}
+
+	/** What the radar is tracking. Used by the game tests. */
+	public static RadarManager manager() {
+		return manager;
 	}
 
 	public static Identifier id(String path) {
