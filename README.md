@@ -5,7 +5,7 @@
 <h1 align="center">MintyRadar</h1>
 
 <p align="center">
-  A client-side Fabric mod for Minecraft 26.3 that shows nearby players on a mini radar.
+  A client-side Fabric mod for Minecraft 1.21.11 and 26.1 to 26.3 that shows nearby players on a mini radar.
 </p>
 
 ---
@@ -41,22 +41,26 @@ Spectators aren't shown, and neither are invisible players and mobs unless you t
 
 ## Requirements
 
-| | Version |
-|---|---|
-| Minecraft | 26.3 |
-| [Fabric Loader](https://fabricmc.net/use/installer/) | 0.19.5 or newer |
-| [Fabric API](https://modrinth.com/mod/fabric-api) | Any version for 26.3 (required) |
-| [Mod Menu](https://modrinth.com/mod/modmenu) | 21.0.0 or newer (optional, adds a Configure button) |
+There's a separate jar for each Minecraft version. Every version has the same features.
+
+| Minecraft | Jar | Java |
+|---|---|---|
+| 26.3 | `MintyRadar-1.3.0+26.3.jar` | 25 |
+| 26.2 | `MintyRadar-1.3.0+26.2.jar` | 25 |
+| 26.1, 26.1.1, 26.1.2 | `MintyRadar-1.3.0+26.1.jar` | 25 |
+| 1.21.11 | `MintyRadar-1.3.0+1.21.11.jar` | 21 |
+
+All versions need [Fabric Loader](https://fabricmc.net/use/installer/) 0.19.5 or newer and [Fabric API](https://modrinth.com/mod/fabric-api) for that Minecraft version. [Mod Menu](https://modrinth.com/mod/modmenu) for that version is optional and adds a Configure button.
 
 MintyRadar is **client-side only**, so servers don't need it installed.
 
 ## Installation
 
-1. Install Fabric Loader for Minecraft 26.3 with the [Fabric installer](https://fabricmc.net/use/installer/).
-2. Download `MintyRadar-x.x.x.jar` from the [Releases](https://github.com/patientJeff/MintyRadar/releases) page, or [build it yourself](#building-from-source).
+1. Install Fabric Loader for your Minecraft version with the [Fabric installer](https://fabricmc.net/use/installer/).
+2. Download the MintyRadar jar for your Minecraft version from [Modrinth](https://modrinth.com/mod/mintyradar) or the [Releases](https://github.com/patientJeff/MintyRadar/releases) page, or [build it yourself](#building-from-source).
 3. Put it in your `mods` folder along with Fabric API. Mod Menu is optional.
    - On Windows, the `mods` folder is at `%appdata%\.minecraft\mods`.
-4. Launch Minecraft with the **fabric-loader-26.3** profile.
+4. Launch Minecraft with the Fabric profile for your version (e.g. **fabric-loader-26.3**).
 
 ## Controls
 
@@ -129,29 +133,56 @@ Many multiplayer servers don't allow radar or minimap mods that show player posi
 
 ## Building from source
 
-You need **JDK 25**.
+You need **JDK 25** (for 26.x) and **JDK 21** (for 1.21.11).
 
 ```bash
 git clone https://github.com/patientJeff/MintyRadar.git
 cd MintyRadar
-./gradlew build          # Windows: .\gradlew.bat build
+./gradlew buildAndCollect    # Windows: .\gradlew.bat buildAndCollect
 ```
 
-The mod jar is written to `build/libs/MintyRadar-<version>.jar`.
+This builds every version and copies the jars to `build/libs/<mod version>/`. To build one version, run e.g. `./gradlew :1.21.11:build` (its jar is in `versions/1.21.11/build/libs/`).
 
-To try it in a development copy of the game, which also loads Mod Menu:
+To try a version in a development copy of the game, which also loads Mod Menu:
 
 ```bash
-./gradlew runClient
+./gradlew :26.3:runClient
 ```
 
-To run the automated test, which opens a small, silent test client, turns on every radar feature in a test world and takes screenshots into `build/run/clientGameTest/screenshots`:
+To run the automated test for a version, which opens a small, silent test client, turns on every radar feature in a test world and takes screenshots into `versions/<version>/build/run/clientGameTest/screenshots`:
 
 ```bash
-./gradlew runClientGameTest
+./gradlew :1.21.11:runClientGameTest
 ```
 
-> `gradle.properties` sets `org.gradle.java.home` to a Windows JDK 25 path. On another system, change or remove that line so it points at your own JDK 25.
+> `gradle.properties` sets `org.gradle.java.home` and `org.gradle.java.installations.paths` to Windows JDK paths. On another system, change or remove those lines so they point at your own JDK 25 and 21.
+
+### Publishing to Modrinth
+
+`./gradlew publishMods` uploads every version's jar to Modrinth as its own version. Each one gets:
+
+- its Minecraft versions from `mod.mc_releases` in `stonecutter.properties.toml`
+- the Fabric loader
+- Fabric API as a required dependency and Mod Menu as optional
+- this version's section of `CHANGELOG.md` as its changelog
+
+To upload for real:
+
+1. Set `modrinth.id` in `stonecutter.properties.toml` to the project's ID or slug.
+2. Put a Modrinth personal access token with the "Create versions" permission in the `MODRINTH_TOKEN` environment variable.
+
+Without both, it's a dry run that uploads nothing.
+
+### How versions are handled
+
+One set of sources builds every version with [Stonecutter](https://stonecutter.kikugie.dev):
+
+- `src/` is written for **26.3**.
+- `stonecutter.properties.toml` lists each version's dependencies.
+- Renames between versions (like `GuiGraphics` in 1.21.11 becoming `GuiGraphicsExtractor` in 26.1) are listed once in `stonecutter.gradle.kts`.
+- The few lines that need different code use `//? if >=26.2 {` comments, mostly in the helpers at the bottom of `RadarClientMod`.
+
+To edit the sources as another version, for example to debug 1.21.11 in the IDE, run `./gradlew "Set active project to 1.21.11"`. Switch back to 26.3 before committing.
 
 ### Project layout
 

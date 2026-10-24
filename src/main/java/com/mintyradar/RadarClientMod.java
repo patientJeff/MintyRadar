@@ -4,6 +4,10 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,5 +60,44 @@ public class RadarClientMod implements ClientModInitializer {
 
 	public static Identifier id(String path) {
 		return Identifier.fromNamespaceAndPath(MOD_ID, path);
+	}
+
+	// --- Calls that differ between Minecraft versions --------------------------------
+
+	/** The screen that's open, or null in game. */
+	public static Screen currentScreen() {
+		//? if >=26.2 {
+		return Minecraft.getInstance().gui.screen();
+		//?} else {
+		/*return Minecraft.getInstance().screen;
+		*///?}
+	}
+
+	public static void setScreen(Screen screen) {
+		//? if >=26.2 {
+		Minecraft.getInstance().gui.setScreen(screen);
+		//?} else {
+		/*Minecraft.getInstance().setScreen(screen);
+		*///?}
+	}
+
+	/** Shows a message in the action bar, above the hotbar. */
+	public static void actionBar(Component message) {
+		LocalPlayer player = Minecraft.getInstance().player;
+		if (player == null) return;
+		//? if >=26.1 {
+		player.sendOverlayMessage(message);
+		//?} else {
+		/*player.displayClientMessage(message, true);
+		*///?}
+	}
+
+	/** True while the HUD is hidden with F1. */
+	public static boolean hudHidden() {
+		//? if >=26.2 {
+		return Minecraft.getInstance().gui.hud.isHidden();
+		//?} else {
+		/*return Minecraft.getInstance().options.hideGui;
+		*///?}
 	}
 }

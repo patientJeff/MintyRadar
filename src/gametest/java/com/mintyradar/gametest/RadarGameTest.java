@@ -39,7 +39,13 @@ public class RadarGameTest implements FabricClientGameTest {
 		check(config.isFriend("notch"), "friends should carry over from 1.2.0");
 
 		try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
+			//? if >=26.2 {
 			world.getConnection().waitForChunksRender();
+			//?} else if >=26.1 {
+			/*world.getClientLevel().waitForChunksRender();
+			*///?} else {
+			/*world.getClientWorld().waitForChunksRender();
+			*///?}
 			TestServerContext server = world.getServer();
 			server.runCommand("gamerule spawn_mobs false");
 			server.runCommand("time set day");

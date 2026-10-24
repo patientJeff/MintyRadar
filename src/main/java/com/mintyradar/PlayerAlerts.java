@@ -74,7 +74,7 @@ public final class PlayerAlerts {
 	}
 
 	private static void fire(Minecraft client, RadarConfig config, RadarManager.Tracked t) {
-		client.player.sendOverlayMessage(Component.translatable("message.minty_radar.alert", t.name, t.meters));
+		RadarClientMod.actionBar(Component.translatable("message.minty_radar.alert", t.name, t.meters));
 		if (config.alertSound) {
 			client.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_PLING, 1.5f));
 		}

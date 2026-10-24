@@ -23,8 +23,9 @@ Newest version first. Downloads for every version are on the [Releases](https://
 Invisible Players and Portals show things you couldn't normally see, so many servers count them as cheating. Check the rules first.
 
 ### Changed
+- **Now on more Minecraft versions:** 1.21.11, 26.1 (also 26.1.1 and 26.1.2), 26.2 and 26.3, each with its own jar (e.g. `MintyRadar-1.3.0+1.21.11.jar`). Every version has the same features.
 - The settings file is now `config/MintyRadar.json`. Your old `minty_radar.json` is moved over automatically, keeping all your settings.
-- The mod is now called **MintyRadar** everywhere, and the jar is `MintyRadar-1.3.0.jar`.
+- The mod is now called **MintyRadar** everywhere.
 - Needs Fabric Loader 0.19.5 or newer.
 - Faster drawing: the round radar's background and the distance rings are drawn once into a texture instead of hundreds of small pieces every frame.
 

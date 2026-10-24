@@ -15,7 +15,7 @@ public abstract class MouseHandlerMixin {
 	@Inject(method = "onScroll", at = @At("HEAD"), cancellable = true)
 	private void mintyRadar$onScroll(long handle, double xoffset, double yoffset, CallbackInfo ci) {
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.player == null || mc.gui.screen() != null || handle != mc.getWindow().handle()) return;
+		if (mc.player == null || RadarClientMod.currentScreen() != null || handle != mc.getWindow().handle()) return;
 		// Some mice and drivers turn the wheel sideways while a modifier key is held, so count that too.
 		double amount = yoffset != 0 ? yoffset : xoffset;
 		if (Keybindings.onScroll(mc, RadarClientMod.config(), amount)) ci.cancel();

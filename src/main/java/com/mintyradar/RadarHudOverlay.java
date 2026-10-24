@@ -90,7 +90,7 @@ public final class RadarHudOverlay implements HudElement {
 		LocalPlayer self = mc.player;
 		if (!config.enabled || self == null || mc.level == null) return;
 		// Hidden while the HUD is off (F1) or the debug screen (F3) would overlap it.
-		if (mc.gui.hud.isHidden() || mc.getDebugOverlay().showDebugScreen()) return;
+		if (RadarClientMod.hudHidden() || mc.getDebugOverlay().showDebugScreen()) return;
 
 		Font font = mc.font;
 		Layout layout = layout(config, g.guiWidth(), g.guiHeight());

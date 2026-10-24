@@ -83,7 +83,7 @@ public final class Keybindings {
 		// Opens the same screen as Mod Menu's Configure button, so Mod Menu isn't required.
 		// Key presses only arrive here while no other screen is open.
 		while (openSettings.consumeClick()) {
-			client.gui.setScreen(new RadarConfigScreen(client.gui.screen()));
+			RadarClientMod.setScreen(new RadarConfigScreen(RadarClientMod.currentScreen()));
 		}
 	}
 
@@ -93,6 +93,6 @@ public final class Keybindings {
 
 	/** Shows feedback in the action bar rather than spamming chat. */
 	private static void notify(Minecraft client, Component message) {
-		if (client.player != null) client.player.sendOverlayMessage(message);
+		RadarClientMod.actionBar(message);
 	}
 }

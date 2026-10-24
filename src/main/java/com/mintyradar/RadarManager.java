@@ -278,9 +278,7 @@ public final class RadarManager {
 			entry.name = name;
 			entry.invisible = invisible;
 			entry.friend = friend;
-			entry.team = config.teamColors && other.getTeam() != null && other.getTeam().getColor().isPresent()
-					? 0xFF000000 | other.getTeamColor()
-					: -1;
+			entry.team = config.teamColors && hasTeamColor(other) ? 0xFF000000 | other.getTeamColor() : -1;
 			entry.distSq = other.distanceToSqr(self);
 			count++;
 		}
@@ -309,6 +307,17 @@ public final class RadarManager {
 			}
 			t.trail = config.showTrails ? trails.get(t.uuid) : null;
 		}
+	}
+
+	/** True if the player is on a scoreboard team that has a colour. */
+	private static boolean hasTeamColor(AbstractClientPlayer player) {
+		var team = player.getTeam();
+		if (team == null) return false;
+		//? if >=26.2 {
+		return team.getColor().isPresent();
+		//?} else {
+		/*return team.getColor().getColor() != null; // ChatFormatting.RESET (no colour) has none
+		*///?}
 	}
 
 	private void tickMobs(LocalPlayer self, ClientLevel level, RadarConfig config) {

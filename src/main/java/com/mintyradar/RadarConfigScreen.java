@@ -193,7 +193,7 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 		resetPosition.active = config.customPosition;
 		list.addSmall(
 				Button.builder(Component.translatable("options.minty_radar.move"),
-						b -> minecraft.gui.setScreen(new HudPositionScreen(this))).build(),
+						b -> RadarClientMod.setScreen(new HudPositionScreen(this))).build(),
 				resetPosition);
 
 		list.addHeader(Component.translatable("options.minty_radar.section.tab_list"));
@@ -218,10 +218,10 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 	}
 
 	private static OptionInstance<Integer> intOption(String key, int min, int max, int initial,
-			java.util.function.IntFunction<Component> label, OptionInstance.ValueUpdateListener<Integer> onChange) {
+			java.util.function.IntFunction<Component> label, Consumer<Integer> onChange) {
 		return new OptionInstance<>(key, OptionInstance.noTooltip(),
 				(caption, v) -> Options.genericValueLabel(caption, label.apply(v)),
-				new OptionInstance.IntRange(min, max), Math.clamp(initial, min, max), onChange);
+				new OptionInstance.IntRange(min, max), Math.clamp(initial, min, max), onChange::accept);
 	}
 
 	/**
@@ -229,13 +229,13 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 	 * Only the value is returned: the cycle button adds the "Caption: " prefix itself.
 	 */
 	private static <E extends Enum<E>> OptionInstance<E> enumOption(String key, E[] values, E initial,
-			OptionInstance.ValueUpdateListener<E> onChange) {
+			Consumer<E> onChange) {
 		Codec<E> codec = Codec.STRING.xmap(
 				name -> Arrays.stream(values).filter(e -> e.name().equals(name)).findFirst().orElse(initial),
 				Enum::name);
 		return new OptionInstance<>(key, OptionInstance.noTooltip(),
 				(caption, v) -> Component.translatable(key + "." + v.name().toLowerCase(Locale.ROOT)),
-				new OptionInstance.Enum<>(List.of(values), codec), initial, onChange);
+				new OptionInstance.Enum<>(List.of(values), codec), initial, onChange::accept);
 	}
 
 	// --- Friends --------------------------------------------------------------------
@@ -294,7 +294,7 @@ public final class RadarConfigScreen extends OptionsSubScreen {
 	 * second list on top of the first, which duplicates everything and blocks clicks.
 	 */
 	private void reopen(int focusBox) {
-		minecraft.gui.setScreen(new RadarConfigScreen(lastScreen, list.scrollAmount(), focusBox));
+		RadarClientMod.setScreen(new RadarConfigScreen(lastScreen, list.scrollAmount(), focusBox));
 	}
 
 	// --- Keybinds -------------------------------------------------------------------
